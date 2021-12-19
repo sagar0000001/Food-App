@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+</head>
+
+<body>
+    <label for="name">Name</label>
+    <input type="text" id="name" placeholder="Your name">
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="abc@gmail.com">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="1234567">
+    <button type="submit">Submit</button>
+</body>
+<!-- axios cdn (₹ no need to install axios locally) -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+<script type="text/javascript">
+    let btn = document.querySelector("button[type='submit']");
+    btn.addEventListener("click", async function (e) {
+        console.log("btn clicked");
+        e.preventDefault();
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        let resp = await axios.post('/auth/signup', { email, name, password });
+        console.log(resp);
+    })
+</script>
+
+</html>
