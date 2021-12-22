@@ -10,7 +10,7 @@ authRouter
 
 async function postSignUp(req, res) {
     let data = req.body;
-    let user = await userModel.create(data);
+    let user = await userModel.create(data); // 📌insert into our DB collection
 
     res.json({
         message: "you are signed up",
@@ -19,7 +19,7 @@ async function postSignUp(req, res) {
 }
 
 function getSignUp(req, res) {
-    res.sendFile('signup.html', { root: './public' }) // For mongoDB (😁like that only)
+    res.sendFile('signup.html', { root: './public' }) // For mongoDB (🤔like that only)
     // res.sendFile('../public/signup.html', { root: __dirname })
 }
 

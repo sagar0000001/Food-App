@@ -14,7 +14,7 @@ mongoose.connect(db_link)
 
 
 
-let userSchema = mongoose.Schema({ /* ढाँचा */
+let userSchema = mongoose.Schema({ /* ढाँचा 🏗️*/
     name: {
         type: "string",
         required: true, // not null
@@ -43,22 +43,25 @@ let userSchema = mongoose.Schema({ /* ढाँचा */
 })
 
 //---------------------------------------- Hooks -------------------------------
-userSchema.pre('save', async function () { // before doing operation in database (there is no argument in callback func)
-    this.confirmPassword = undefined; // database donot store undefined properties.  this = doc (document)
+userSchema.pre('save', async function () { // 😀before doing operation in database 
+    // callback function =>
 
     //---------------------protecting password by Hashing-----------------------
     let salt = await bcrypt.genSalt(); // giving promise
     let hashedString = await bcrypt.hash(this.password, salt);
     this.password = hashedString;
 
+    this.confirmPassword = undefined; //👈🏼 database donot store undefined properties
+    // 🙄this i.e. doc (document inside mongoDb collection)
 })
 
 userSchema.post('save', function () {
+    // callback function =>
     console.log("after saving into db");
 })
 //------------------------------------------------------------------------------
 
 
-let userModel = mongoose.model('userModel', userSchema); // gaadi of our skeleton(ढाँचा)
+let userModel = mongoose.model('userModel', userSchema); // gaadi of our skeleton (Schema)(ढाँचा)
 
 module.exports = userModel;

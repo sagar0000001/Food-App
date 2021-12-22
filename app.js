@@ -5,10 +5,10 @@ let userRouter = require('./Routers/userRouter');
 let authRouter = require('./Routers/authRouter');
 app.use(express.json()); // global middleware funcn
 app.use(cookieParser()); // global middleware funcn ∵ we want to access the cookie from anywhere
-app.listen(3000);
+app.listen(3000); //🚀
 
-app.use('/auth', authRouter);
-app.use('/user', userRouter);
+app.use('/auth', authRouter); // 🚀global middleware funcn
+app.use('/user', userRouter); // 🚀glabal
 
 
 //---------404----------

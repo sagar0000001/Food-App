@@ -93,11 +93,17 @@ function getUserById(req, res) {
 
 function setCookies(req, res) {
     // res.setHeader('Set-Cookie', 'isLoggedIn=true')  //http method
-    res.cookie("isLoggedIn", false) //cookie-parser 's method
+    // res.cookie("isLoggedIn", false) //cookie-parser 's method
+    res.cookie("isLoggedIn", false, { maxAge: 1000 * 60 * 60 * 24, secure: true, httpOnly: true }) //☠️ expire after 1 day
+    //🔐 not accesible from console i>e> document.cookie😜
     res.send("cookie is set")
 }
 
-function getCookies(req, res) { }
+function getCookies(req, res) {
+    let cookies = req.cookies;
+    console.log(cookies);
+    res.send("cookies received");
+}
 
 
 module.exports = userRouter;
