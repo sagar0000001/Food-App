@@ -1,5 +1,9 @@
 // all signup, login, forgot
 let userModel = require('../models/userModel')
+const jwt = require('jsonwebtoken');
+let JWT_KEY = "sdjr8ere09u" //random (our choice)
+let bcrypt = require('bcrypt');
+
 
 module.exports.signup = async function postSignUp(req, res) {
     try {
@@ -7,6 +11,7 @@ module.exports.signup = async function postSignUp(req, res) {
         let user = await userModel.create(data); // go for📌insert into our DB collection
 
         if (user) { //user successfully inserted into DB (pre Hook check cleared)🎉
+
             res.json({
                 message: "you are signed up",
                 YourDataInOurDb: user
@@ -24,7 +29,8 @@ module.exports.login = async function loginUser(req, res) { // from email, passw
             let user = await userModel.findOne({ email: data.email }); // from database🏪
 
             if (user) {
-                if (user.password == data.password) { //🚨Hashing not checked
+                let passwordMatch = bcrypt.compare(data.password, user.password); // compare the input password with DB's Hashed password
+                if (passwordMatch) {
                     let uid = user['_id']; //unique id🆔 ,inside mongoDB🏪
                     let jwt_token = jwt.sign({ payload: uid }, JWT_KEY); //creating signature🔑
                     res.cookie("isLoggedIn", jwt_token)
@@ -62,6 +68,12 @@ module.exports.isAuthorised = function isAuthorized(roles) {
     }
 }
 
+
+
+//🔑logged in or not
+// if logged out->🛑not granted to enter
+// if logged in->🙏u are welcome
+//So we'll use Cookies🍪
 // when loggedin successfully -> payload -> id -> {role, display profile}
 module.exports.protectRoute = function protectRoute(req, res, next) {
     try {
@@ -83,7 +95,7 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
         }
         else { //there is no cookie stored named as 'isLoggedIn'
             res.json({
-                message: "operation not allowed"
+                message: "Please Login first"
             })
         }
     } catch (err) { message: err.message }
