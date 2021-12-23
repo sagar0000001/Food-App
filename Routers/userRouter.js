@@ -1,10 +1,11 @@
 let express = require('express');
 let userRouter = express.Router();
 let userModel = require('../models/userModel');
+let protectRoute = require('./authHelper');
 
 userRouter
     .route('/')
-    .get(getUser)
+    .get(protectRoute, getUser)  //🔐middleware function
     .post(postUser)
     .patch(updateUser)
     .delete(deleteUser)
@@ -25,9 +26,11 @@ userRouter
 
 
 
-
+//Website is now protected
+// if loggedIn -> set
 async function getUser(req, res) {
-    let user = await userModel.findOne({ email: "sagar@gmail.com" })
+    // let user = await userModel.findOne({ email: "sagar@gmail.com" })
+    let user = await userModel.findOne({ email: "bharat@gmail.com" })
     res.json({
         message: "your data",
         user: user

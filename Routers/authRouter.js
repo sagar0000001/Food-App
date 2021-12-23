@@ -24,6 +24,7 @@ async function loginUser(req, res) {
                 // let salt = await bcrypt.genSalt(); // giving promise
                 // let hashedString = await bcrypt.hash(data.password, salt);
                 if (user.password == data.password) {
+                    res.cookie("isLoggedIn", true)
                     res.send("you are logged in")
                 }
                 else res.send("password incorrect")
