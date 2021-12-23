@@ -39,6 +39,15 @@ let userSchema = mongoose.Schema({ /* ढाँचा 🏗️*/
         validate: function () {
             return this.password == this.confirmPassword;
         }
+    },
+    role: {
+        type: "string",
+        enum: ["admin", "user", "restarauntOwner", "deliveryBoy"],//Strings ka array (name by default in MongoDB = enum[]) 
+        default: "user" // for role
+    },
+    profileImage: {
+        type: "string", // ∵ using Multer to send image
+        default: "../img/users/default.jpeg"
     }
 })
 
