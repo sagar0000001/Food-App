@@ -32,12 +32,14 @@ let userSchema = mongoose.Schema({ /* ढाँचा 🏗️*/
         required: true,
         minLength: 6,
     },
-    confirmPassword: {
+    confirmPassword: { // This will not gonna store in our DB; ∴ For User operations -> This will'be required
         type: "string",
         required: true,
         minLength: 6, // minimum length of string
         validate: function () {
-            return this.password == this.confirmPassword;
+            // console.log(this.password);
+            // console.log(this.confirmPassword);
+            return this.password == this.confirmPassword; //🚨 Confirm Password will'be required (from user) (As it is not stored in DB🔐)
         }
     },
     role: {
@@ -54,14 +56,19 @@ let userSchema = mongoose.Schema({ /* ढाँचा 🏗️*/
 //---------------------------------------- Hooks -------------------------------
 userSchema.pre('save', async function () { // 😀before doing operation in database 
     // callback function =>
+    let flag_alreadyHashed = this.password.length > 50;
+    if (!flag_alreadyHashed) {
 
-    //---------------------protecting password by Hashing-----------------------
-    let salt = await bcrypt.genSalt(); // giving promise
-    let hashedString = await bcrypt.hash(this.password, salt);
-    this.password = hashedString;
+        //---------------------protecting password by Hashing-----------------------
+        let salt = await bcrypt.genSalt(); // giving promise
+        // console.log("salt : ", salt);
+        let hashedString = await bcrypt.hash(this.password, salt);
+        this.password = hashedString;
+    }
 
     this.confirmPassword = undefined; //👈🏼 database donot store undefined properties
     // 🙄this i.e. doc (document inside mongoDb collection)
+
 })
 
 userSchema.post('save', function () {

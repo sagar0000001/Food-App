@@ -32,7 +32,7 @@ userRouter
 
 
 
-//Administration routes
+//Administration route 🔐( because written in the last of all the user-routes )
 app.use(isAuthorised(['admin'])) //This middleware will work for all the calls defined below
 // req, res are handled inside app.use()
 // we pass callback fun to app.use(cb) consist of req, res, next

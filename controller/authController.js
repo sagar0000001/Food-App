@@ -8,12 +8,16 @@ let bcrypt = require('bcrypt');
 module.exports.signup = async function postSignUp(req, res) {
     try {
         let data = req.body;
-        let user = await userModel.create(data); // go for📌insert into our DB collection
+        let user = await userModel.findOne({ email: data.email })
+        if (user) { //user exists in our DB
+            return res.json({ message: "You are already signed up. You can signin" })
+        }
+        user = await userModel.create(data); // go for📌insert into our DB collection
 
         if (user) { //user successfully inserted into DB (pre Hook check cleared)🎉
 
             res.json({
-                message: "you are signed up सफलतापूर्वक",
+                message: "you are signed up successfully🎉",
                 YourDataInOurDb: user
             });
         } else res.send("Email not exist in our database/ password do not matches");
