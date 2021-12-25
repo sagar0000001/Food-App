@@ -1,7 +1,7 @@
 // all signup, login, forgot
 let userModel = require('../models/userModel')
 const jwt = require('jsonwebtoken');
-let JWT_KEY = "sdjr8ere09u" //random (our choice)
+let JWT_SECRET_KEY = "sdjr8ere09u" //random (our choice)
 let bcrypt = require('bcrypt');
 
 
@@ -13,10 +13,10 @@ module.exports.signup = async function postSignUp(req, res) {
         if (user) { //user successfully inserted into DB (pre Hook check cleared)🎉
 
             res.json({
-                message: "you are signed up",
+                message: "you are signed up सफलतापूर्वक",
                 YourDataInOurDb: user
             });
-        } else res.send("Email not valid/ password do not matches");
+        } else res.send("Email not exist in our database/ password do not matches");
 
     } catch (err) { message: err.message };
 }
@@ -25,26 +25,28 @@ module.exports.signup = async function postSignUp(req, res) {
 module.exports.login = async function loginUser(req, res) { // from email, password
     try { // validating data from frontend
         let data = req.body;
-        if (data.email) {
+        if (data.email && data.password) { // user have filled both email & password field
             let user = await userModel.findOne({ email: data.email }); // from database🏪
 
-            if (user) {
-                let passwordMatch = bcrypt.compare(data.password, user.password); // compare the input password with DB's Hashed password
-                if (passwordMatch) {
+            if (user) { //email exist in our DB
+                let isPasswordCorrect = bcrypt.compare(data.password, user.password); // user.password DB's Hashed password वाला है
+                if (isPasswordCorrect) {
                     let uid = user['_id']; //unique id🆔 ,inside mongoDB🏪
-                    let jwt_token = jwt.sign({ payload: uid }, JWT_KEY); //creating signature🔑
+                    let jwt_token = jwt.sign({ payload: uid }, JWT_SECRET_KEY); //creating signature🔑
                     res.cookie("isLoggedIn", jwt_token)
                     res.send("you are logged in")
                 }
-                else res.send("wrong credentials") //🚨(security)Don't ->password incorrect
+                else {
+                    res.send("wrong credentials") //🚨(security)Don't ->password incorrect
+                }
             }
-            else { // user := null
+            else { // user := null i.e. Not found in our DB
                 res.send("user not found");
             }
         }
         else {
             res.json({
-                message: "empty fields found" //email not entered
+                message: "Input fields Empty"
             })
         }
 
@@ -80,7 +82,7 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
         let token;
         if (req.cookies.isLoggedIn) {
             token = req.cookies.isLoggedIn
-            let payload = jwt.verify(req.cookies.isLoggedIn, JWT_KEY); // unique id of DB's dom
+            let payload = jwt.verify(req.cookies.isLoggedIn, JWT_SECRET_KEY); // unique id of DB's dom
             if (payload) { //wrapper on id
                 let user = userModel.findById(payload.payload)
                 req.role = user.role

@@ -1,6 +1,6 @@
 let express = require('express');
 let userRouter = express.Router();
-let userModel = require('../models/userModel');
+// let userModel = require('../models/userModel');
 const { getUser, postUser, updateUser, deleteUser, getAllUser, setCookies, getCookies } = require('../controller/userController')
 const { signup, login, isAuthorised, protectRoute } = require('../controller/authController')
 
@@ -25,9 +25,9 @@ userRouter
 
 
 // profile page
-app.use(protectRoute) //this middleware will work for all the calls defined below it
+app.use(protectRoute) //Before providing User-details. This middleware will work for all the calls defined below it (for safety)
 userRouter
-    .route('/userProfile')
+    .route('/profile')
     .get(getUser)
 
 

@@ -1,24 +1,32 @@
 // All the Logic of UserRouter is here
+const jwt = require('jsonwebtoken');
+let JWT_SECRET_KEY = "sdjr8ere09u" //random (our choice)
 
 let userModel = require('../models/userModel');
 
 //Website is now protected
 // if loggedIn -> set
 module.exports.getUser = async function getUser(req, res) {
-    let id = req.params.id;
-    let user = await userModel.findOne({ id: id })
+    // let id = req.params.id;
+    let token = jwt.verify(req.cookies.isLoggedIn, JWT_SECRET_KEY);
+    console.log(token);
+    let id = "";
+    if (token) {
+        id = token.payload;
+        let user = await userModel.findOne({ _id: id }) // In our DB-> _id 🔑
+
+        return res.json({
+            message: "your data",
+            user: user
+        })
+    };
 
     res.json({
-        message: "your data",
-        user: user
+        message: "Invalid",
     })
 
-
     // let allUsers = await userModel.find()
-    // res.json({
-    //     message: "all users in our database",
-    //     data: allUsers
-    // })
+
 
     // res.send(user)
 }
