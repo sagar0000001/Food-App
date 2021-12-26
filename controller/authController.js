@@ -1,7 +1,7 @@
 // all signup, login, forgot
 let userModel = require('../models/userModel')
 const jwt = require('jsonwebtoken');
-let JWT_SECRET_KEY = "sdjr8ere09u" //random (our choice)
+const { JWT_SECRET_KEY } = require('../secrets')
 let bcrypt = require('bcrypt');
 
 
@@ -63,13 +63,13 @@ module.exports.login = async function loginUser(req, res) { // from email, passw
 }
 
 // To Check User Role 
-module.exports.isAuthorised = function isAuthorized(roles) {
+module.exports.isAuthorisedFor = function isAuthorizedFor(roles) {
     return function (req, res, next) {
         if (roles.includes(req.role) == true) {
             next();
         }
         else {
-            res.status(401).json({ message: "operation not allowed" }) //UnAuthorised 
+            res.status(401).json({ message: "You are not authorized for this request" }) //UnAuthorised 
         }
     }
 }
@@ -81,30 +81,30 @@ module.exports.isAuthorised = function isAuthorized(roles) {
 // if logged in->🙏u are welcome
 //So we'll use Cookies🍪
 // when loggedin successfully -> payload -> id -> {role, display profile}
-module.exports.protectRoute = function protectRoute(req, res, next) {
+module.exports.protectRoute = async function protectRoute(req, res, next) { //promise in the middleware
     try {
-        let token;
-        if (req.cookies.isLoggedIn) {
-            token = req.cookies.isLoggedIn
-            let payload = jwt.verify(req.cookies.isLoggedIn, JWT_SECRET_KEY); // unique id of DB's dom
+        let token = req.cookies.isLoggedIn
+        if (token) {
+            let payload = jwt.verify(token, JWT_SECRET_KEY); // unique id of DB's dom
             if (payload) { //wrapper on id
-                let user = userModel.findById(payload.payload)
-                req.role = user.role
-                req.id = user.id
-                next();
-            }
-            else {
-                res.json({
-                    message: "user is not verified"
-                })
+                let user = await userModel.findById(payload.payload)
+                if (user) {
+                    // console.log(req);
+                    req.role = user.role //req वाले object में हमने role -property डाल दी है
+                    req.id = user.id // ऐसे ही id -property
+                    // console.log(req);
+                    next();
+                }
             }
         }
         else { //there is no cookie stored named as 'isLoggedIn'
-            res.json({
+            return res.json({
                 message: "Please Login first"
             })
         }
-    } catch (err) { message: err.message }
+    } catch (err) {
+        return res.json({ message: err.message })
+    }
 
 }
 

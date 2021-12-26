@@ -1,10 +1,10 @@
 let mongoose = require('mongoose');
 let emailValidator = require('email-validator');
 let bcrypt = require('bcrypt');
+const { DB_LINK } = require('../secrets')
 
-const db_link = "mongodb+srv://sagaroshiv:MyPass1234@cluster0.vu99f.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
-mongoose.connect(db_link)
+mongoose.connect(DB_LINK)
     .then(db => {
         console.log("db connected successfully")
     })

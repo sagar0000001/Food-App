@@ -1,6 +1,6 @@
 // All the Logic of UserRouter is here
 const jwt = require('jsonwebtoken');
-let JWT_SECRET_KEY = "sdjr8ere09u" //random (our choice)
+const { JWT_SECRET_KEY } = require('../secrets');
 let bcrypt = require('bcrypt');
 
 let userModel = require('../models/userModel');
@@ -84,23 +84,26 @@ module.exports.updateUser = async function updateUser(req, res) {
 module.exports.deleteUser = async function deleteUser(req, res) {
     try {
         let id = req.params.id;
-        let user = userModel.findone({ id: id })
+        let user = await userModel.findOne({ _id: id })
         if (user) {
-            userModel.findOneAndDelete({ id: id });
+            await userModel.findOneAndDelete({ _id: id });
             res.send("deleted successfully")
         }
         else res.send("user not found")
     } catch (err) { res.json({ message: err.message }) }
 }
 
-module.exports.getAllUser = function getAllUser(req, res) {
+module.exports.getAllUser = async function getAllUser(req, res) {
     try {
-        let users = userModel.find();
-        if (users) {
-            res.json({ messages: "All users received", users: users })
+        let all_users = await userModel.find();
+        if (all_users) {
+            res.json({
+                messages: "All users received",
+                data: all_users
+            })
         }
-        else res.send("no user found")
-    } catch (err) { res.json({ messagee: err.message }) }
+        else res.send("user list empty")
+    } catch (err) { res.json({ message: err.message }) }
 }
 
 
